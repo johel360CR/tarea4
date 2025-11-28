@@ -3,10 +3,10 @@ namespace PAW3.Web.Models.ViewModels;
 public class ProductDtoViewModel
 {
     public IEnumerable<ProductViewModel> Products { get; set; } = [];
-    public List<ProductSummaryViewModel> Summaries { get; set; } = [];
+    public List<SummaryViewModelViewModel> Summaries { get; set; } = [];
 }
 
-public class ProductSummaryViewModel
+public class SummaryViewModelViewModel
 {
     public decimal? Id { get; set; }
     public string? Name { get; set; }

@@ -30,6 +30,8 @@ public interface IProductBusiness
     /// <param name="product"></param>
     /// <returns></returns>
     Task<bool> SaveProductAsync(Product product);
+    // Nuevo: obtener un summary por producto
+    Task<SummaryViewModel?> GetProductSummaryAsync(int id);
 }
 
 public class ProductBusiness(IRepositoryProduct repositoryProduct) : IProductBusiness
@@ -68,11 +70,11 @@ public class ProductBusiness(IRepositoryProduct repositoryProduct) : IProductBus
                 x.Rating
             })
             .GroupBy(y => y.Rating)
-            .SelectMany(g => g.Select(sub => new ProductSummary
+            .SelectMany(g => g.Select(sub => new SummaryViewModel
             {
                 Id = sub.Id,
                 Name = sub.Name,
-                Rating = sub.Rating,
+                Value = sub.Rating,
                 Count = g.Count()
             })).OrderByDescending(x => x.Count));
 
@@ -82,7 +84,7 @@ public class ProductBusiness(IRepositoryProduct repositoryProduct) : IProductBus
             {
                 foreach (var subItem in item)
                 {
-                    productDto.Summaries.Add(new ProductSummary()
+                    productDto.Summaries.Add(new SummaryViewModel()
                     {
                         Id = item.Key,
                         Name = subItem.Name,
@@ -95,5 +97,21 @@ public class ProductBusiness(IRepositoryProduct repositoryProduct) : IProductBus
         productDto.Products = products;
         return productDto;
     }
+    public async Task<SummaryViewModel?> GetProductSummaryAsync(int id)
+    {
+        var product = await repositoryProduct.FindAsync(id);
+        if (product == null) return null;
+
+        var summary = new SummaryViewModel
+        {
+            Id = (decimal?)product.ProductId,
+            Name = product.ProductName ?? string.Empty,
+            Value = product.Rating,
+            Count = product.Inventory?.UnitsInStock ?? 0
+        };
+
+        return summary;
+    }
+
 }
 

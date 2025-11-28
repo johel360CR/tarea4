@@ -3,6 +3,7 @@ using PAW3.Core.BusinessLogic;
 using PAW3.Models.DTO;
 using PAW3.Models.Entities;
 
+
 namespace PAW3.Api.Controllers;
 
 [Route("api/[controller]")]
@@ -60,4 +61,23 @@ public class ProductApiController(IProductBusiness productBusiness) : Controller
             return Ok(result);
         return NotFound();
     }
+    // GET api/ProductApi/{id}/summary
+    [HttpGet("{id}/summary")]
+    public async Task<ActionResult<SummaryViewModel>> GetSummary(int id)
+    {
+        var productsDto = await productBusiness.GetProducts(id);
+        var product = productsDto?.Products?.FirstOrDefault();
+        if (product == null) return NotFound();
+
+        var summary = new SummaryViewModel
+        {
+            Id = (decimal?)product.ProductId,
+            Name = product.ProductName ?? string.Empty,
+            Value = product.Rating,
+            Count = product.Inventory?.UnitsInStock ?? 0
+        };
+
+        return Ok(summary);
+    }
+
 }

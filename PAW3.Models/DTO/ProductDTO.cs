@@ -6,6 +6,6 @@ namespace PAW3.Models.DTO
     {
         public IEnumerable<Product> Products { get; set; } = [];
 
-        public List<ProductSummary> Summaries { get; set; } = [];
+        public List<SummaryViewModel> Summaries { get; set; } = [];
     }
 }
